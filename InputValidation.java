@@ -30,6 +30,12 @@ public class InputValidation {
         return choice;
     }
 
+    public static void validateWeight(double weight, double maxWeight) {
+        if (weight > maxWeight) {
+            throw new IllegalArgumentException("Invalid Input! Weight must be less than the Max Weight.");
+        }
+    }
+
     private static void hasLeadingZero(String input) {
         if (input.startsWith("0")) {
             throw new NumberFormatException("Invalid Input! No Leading Zeroes Allowed!");
