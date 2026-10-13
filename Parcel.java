@@ -10,8 +10,6 @@ public abstract class Parcel {
     public abstract double getBaseFee();
 
     protected Parcel(String trackingNumber, String receiverName, double weight) {
-        InputValidation.validateWeight(weight, getMaxWeight());
-        
         this.trackingNumber = trackingNumber;
         this.receiverName = receiverName;
         this.weight = weight;
@@ -36,5 +34,5 @@ public abstract class Parcel {
 
     public boolean getDeliveryStatus() {
         return isDelivered;
-    }
+    }  
 }
