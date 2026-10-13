@@ -1,3 +1,4 @@
+package model;
 public class Fragile extends Box {
     private final double HANDLING_FEE = 100.00;
     private final double MAX_WEIGHT = 30.0;

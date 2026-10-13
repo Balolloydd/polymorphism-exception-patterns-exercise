@@ -1,3 +1,5 @@
+package strategy;
+
 public class SameDayDelivery implements DeliveryStrategy {
     @Override 
     public double calculateDeliveryCost(double baseFee) {

@@ -1,3 +1,5 @@
+package util;
+
 public class UserInterface {
     private static final short TEXT_PADDING = 3;
     

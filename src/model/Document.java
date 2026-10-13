@@ -1,3 +1,5 @@
+package model;
+
 public class Document extends Parcel {
     private final double BASE_FEE = 50;
     private final double MAX_WEIGHT = 0.5;

@@ -1,3 +1,5 @@
+package model;
+
 public class Box extends Parcel{
     private final double MAX_WEIGHT = 50.0;
     private final int length, width, height;

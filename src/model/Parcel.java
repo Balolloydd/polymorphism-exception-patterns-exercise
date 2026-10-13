@@ -1,3 +1,5 @@
+package model;
+
 public abstract class Parcel {
     private final String trackingNumber;
     private final String receiverName;
