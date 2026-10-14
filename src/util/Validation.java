@@ -1,8 +1,8 @@
 package util;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
-import java.util.LinkedHashMap;
 import app.ParcelManager;
+import constant.DeliveryStatus;
 
 public class Validation {
     private Validation() {} // Prevents Instatiation
@@ -95,6 +95,12 @@ public class Validation {
         }
     }
 
+    public static void validateDeliveryStatus(DeliveryStatus status) {
+        if (status == DeliveryStatus.DELIVERED) {
+            throw new IllegalStateException("Parcel was already delivered.");
+        }
+    }
+
     // Helper Functions of Validation Methods
     private static void hasLeadingZero(String rawInput) {
         if (rawInput.startsWith("0") && !rawInput.startsWith("0.")) {
@@ -127,5 +133,4 @@ public class Validation {
         }
     }
 
-    
 }

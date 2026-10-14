@@ -1,6 +1,7 @@
 package model;
 
 import util.Validation;
+import constant.ParcelType;
 
 public class Box extends Parcel{
     private final int length, width, height;

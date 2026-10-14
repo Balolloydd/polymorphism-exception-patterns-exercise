@@ -5,7 +5,7 @@ import util.Input;
 import util.UserInterface;
 import util.Validation;
 import model.*;
-import strategy.DeliveryStrategy;
+import constant.ParcelType;
 import strategy.ExpressDelivery;
 import strategy.SameDayDelivery;
 import strategy.StandardDelivery;
@@ -29,6 +29,8 @@ public class DeliverySystem {
                 }
             } catch (NumberFormatException e) {
                 UserInterface.displayFeedback(e.getMessage());
+            } catch (IllegalStateException e) {
+                UserInterface.displayFeedback(e.getMessage());
             } catch (KeyAlreadyExistsException e) {
                 UserInterface.displayFeedback(e.getMessage());
             } catch (IllegalArgumentException e) {
@@ -38,8 +40,6 @@ public class DeliverySystem {
     }   
 
     private void addParcel() {
-        DeliveryStrategy strategy = null;
-        ParcelManager instance = ParcelManager.getInstance();
         Parcel parcel;
 
         String trackingNumber, receiverName;
@@ -48,69 +48,58 @@ public class DeliverySystem {
         int numOfPages, length, width, height;
         String handlingNote;
         
-        try {
-            UserInterface.displayParcelMenu();
-            int choice = Input.readChoice("Input Choice: ", 1, 3);
+        UserInterface.displayParcelMenu();
+        int choice = Input.readChoice("Input Choice: ", 1, 3);
 
-            switch (choice) {
-                case 1: maxWeight = ParcelType.DOCUMENT.getMaxWeight();
-                case 2: maxWeight = ParcelType.BOX.getMaxWeight();
-                case 3: maxWeight = ParcelType.FRAGILE.getMaxWeight();
-                default: maxWeight = -1;
-            }
-
-            trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
-            receiverName = Input.readReceiverName("Input Receiver Name: ");
-            weight = Input.readWeight(receiverName, maxWeight);
-
-            switch (choice) {
-                case 1: 
-                    numOfPages = Input.readNumberOfPages("Input Number of Pages: ");
-                    parcel = new Document(trackingNumber, receiverName, weight, numOfPages);
-                    break;
-                case 2: 
-                    length = Input.readBoxMeasurement("Input Length: ");
-                    width = Input.readBoxMeasurement("Input Width: ");
-                    height = Input.readBoxMeasurement("Input Height: ");
-
-                    parcel = new Box(trackingNumber, receiverName, weight, length, width, height);
-                    break;
-                case 3: 
-                    length = Input.readBoxMeasurement("Input Length: ");
-                    width = Input.readBoxMeasurement("Input Width: ");
-                    height = Input.readBoxMeasurement("Input Height: ");
-
-                    handlingNote = Input.readHandlingNote("Input Handling Note: ");
-                    parcel = new Fragile(trackingNumber, receiverName, weight, length, width, height, handlingNote);
-                    break;
-                default: parcel = null;
-            }
-
-            instance.addParcel(parcel);
-            UserInterface.displayServiceMenu();
-            choice = Input.readChoice("Input Choice:", 1, 3);
-
-            switch(choice) {
-                case 1: strategy = new StandardDelivery(); break;
-                case 2: strategy = new ExpressDelivery(); break;
-                case 3: 
-                    Validation.validateSameDay(weight);
-                    strategy = new SameDayDelivery();
-                    break;
-                default: UserInterface.displayFeedback("Something wrong happened. Please Try Again.");
-            }
-            
-            instance.getParcel(trackingNumber).setDeliveryStrategy(strategy);
-            double deliveryFee = strategy.calculateDeliveryCost(instance.getParcel(trackingNumber).getBaseFee());
-
-            UserInterface.displayFeedback(String.format("Parcel Added Successfully!\nDelivery Fee: %.2f", deliveryFee));
-        } catch (NumberFormatException e) {
-            UserInterface.displayFeedback(e.getMessage());
-        } catch (NullPointerException e) {
-            UserInterface.displayFeedback(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            UserInterface.displayFeedback(e.getMessage());
+        switch (choice) {
+            case 1: maxWeight = ParcelType.DOCUMENT.getMaxWeight();
+            case 2: maxWeight = ParcelType.BOX.getMaxWeight();
+            case 3: maxWeight = ParcelType.FRAGILE.getMaxWeight();
+            default: maxWeight = -1;
         }
+
+        trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
+        receiverName = Input.readReceiverName("Input Receiver Name: ");
+        weight = Input.readWeight(receiverName, maxWeight);
+
+        switch (choice) {
+            case 1: 
+                numOfPages = Input.readNumberOfPages("Input Number of Pages: ");
+                parcel = new Document(trackingNumber, receiverName, weight, numOfPages);
+                break;
+            case 2: 
+                length = Input.readBoxMeasurement("Input Length: ");
+                width = Input.readBoxMeasurement("Input Width: ");
+                height = Input.readBoxMeasurement("Input Height: ");
+
+                parcel = new Box(trackingNumber, receiverName, weight, length, width, height);
+                break;
+            case 3: 
+                length = Input.readBoxMeasurement("Input Length: ");
+                width = Input.readBoxMeasurement("Input Width: ");
+                height = Input.readBoxMeasurement("Input Height: ");
+
+                handlingNote = Input.readHandlingNote("Input Handling Note: ");
+                parcel = new Fragile(trackingNumber, receiverName, weight, length, width, height, handlingNote);
+                break;
+            default: parcel = null;
+        }
+
+        ParcelManager.getInstance().addParcel(parcel);
+        UserInterface.displayServiceMenu();
+        choice = Input.readChoice("Input Choice:", 1, 3);
+
+        switch(choice) {
+            case 1: parcel.setDeliveryStrategy(new StandardDelivery()); break;
+            case 2: parcel.setDeliveryStrategy(new StandardDelivery()); break;
+            case 3: 
+                Validation.validateSameDay(parcel.getChargeableWeight());
+                parcel.setDeliveryStrategy(new StandardDelivery());
+                break;
+            default: UserInterface.displayFeedback("Something wrong happened. Please Try Again.");
+        }
+
+        UserInterface.displayFeedback(String.format("Parcel Added Successfully!\nDelivery Fee: %.2f", parcel.getDeliveryFee()));
     }
 
     public void viewAllParcels() {
@@ -119,9 +108,31 @@ public class DeliverySystem {
 
     public void changeDeliveryService() {
         Validation.validateEmptyParcelList();
+        UserInterface.displayParcelTable(ParcelManager.getInstance().getAllParcels());
+
+        String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
+        Validation.validateAvailability(trackingNumber, false);
+        Parcel parcel = ParcelManager.getInstance().getParcel(trackingNumber);
+
+        UserInterface.displayServiceMenu();
+        int choice = Input.readChoice("Input Choice:", 1, 3);
+
+        switch(choice) {
+            case 1: parcel.setDeliveryStrategy(new StandardDelivery()); break;
+            case 2: parcel.setDeliveryStrategy(new ExpressDelivery()); break;
+            case 3: 
+                Validation.validateSameDay(parcel.getChargeableWeight());
+                parcel.setDeliveryStrategy(new SameDayDelivery());
+                break;
+            default: UserInterface.displayFeedback("Something wrong happened. Please Try Again.");
+        }
     }
 
     public void markDelivered() {
         Validation.validateEmptyParcelList();
+        
+        String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
+        Validation.validateAvailability(trackingNumber, false);
+        ParcelManager.getInstance().getParcel(trackingNumber).setDeliveryStatus();
     }
 }

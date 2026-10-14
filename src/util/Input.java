@@ -1,6 +1,5 @@
 package util;
 import java.util.Scanner;
-import strategy.DeliveryStrategy;
 
 public class Input {
     private static final Scanner sc = new Scanner(System.in);

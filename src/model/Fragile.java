@@ -1,6 +1,7 @@
 package model;
 
 import util.Validation;
+import constant.ParcelType;
 
 public class Fragile extends Box {
     private final double HANDLING_FEE = 100.00;

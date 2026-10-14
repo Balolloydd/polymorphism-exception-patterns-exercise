@@ -1,4 +1,5 @@
 package strategy;
+import constant.DeliveryType;
 
 public class StandardDelivery implements DeliveryStrategy {
     @Override

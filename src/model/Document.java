@@ -1,6 +1,7 @@
 package model;
 
 import util.Validation;
+import constant.ParcelType;
 
 public class Document extends Parcel {
     private final double BASE_FEE = 50;
