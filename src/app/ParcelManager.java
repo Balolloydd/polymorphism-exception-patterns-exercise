@@ -32,7 +32,6 @@ public class ParcelManager {
     }
 
     public Parcel getParcel(String trackingNumber) {
-        Validation.validateNullObjects(parcels.get(trackingNumber));
         return parcels.get(trackingNumber);
     }
 }

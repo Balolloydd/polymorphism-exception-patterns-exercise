@@ -18,10 +18,10 @@ public abstract class Parcel {
         Validation.validateTrackingNumber(trackingNumber);
         this.trackingNumber = trackingNumber;
         
-        Validation.validateTrackingNumber(receiverName);
+        Validation.validateNonEmptyStrings(receiverName);
         this.receiverName = receiverName;
         
-        Validation.validateTrackingNumber(String.valueOf(weight));
+        Validation.validateWeight(String.valueOf(weight));
         this.weight = weight;
 
         this.status = DeliveryStatus.PENDING;

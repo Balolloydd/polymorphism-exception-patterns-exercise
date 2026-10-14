@@ -12,7 +12,13 @@ public class Validation {
         isNegative(rawInput);
         hasLeadingZero(rawInput);
         
-        int choice = Integer.parseInt(rawInput);
+        int choice;
+        try {
+            choice = Integer.parseInt(rawInput);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Invalid Input! Number must be a valid integer.");
+        }
+        
         if (choice < min || choice > max) {
             throw new IllegalArgumentException("Invalid Input! Please enter a number between " + min + " and " + max + ".");
         }
@@ -26,23 +32,21 @@ public class Validation {
         }
     }
 
-    public static void validateWeight(String rawInput, double maxWeight) {
-        if (maxWeight == -1) {
-            throw new IllegalArgumentException("Something went wrong. Please Try Again.");
-        }
-        
+    public static void validateWeight(String rawInput) {
         isInputEmpty(rawInput);
         isNegative(rawInput);
         hasLeadingZero(rawInput);
         isValidDecimalFormat(rawInput);
         
-        double weight = Double.parseDouble(rawInput);
-        if (!Double.isFinite(weight)) {
-            throw new IllegalArgumentException("Invalid Input! Weight must be a finite number.");
+        double weight;
+        try {
+            weight = Double.parseDouble(rawInput);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Invalid Input! Number must be a valid decimal.");
         }
         
-        if (weight > maxWeight) {
-            throw new IllegalArgumentException("Invalid Input! Weight must be less than the Max Weight.");
+        if (!Double.isFinite(weight)) {
+            throw new IllegalArgumentException("Invalid Input! Weight must be a finite number.");
         }
     }
 
@@ -60,7 +64,12 @@ public class Validation {
         isInputEmpty(rawInput);
         isNegative(rawInput);
         hasLeadingZero(rawInput);
-        Integer.parseInt(rawInput);
+        
+        try {
+            Integer.parseInt(rawInput);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Invalid Input! Number must be a valid integer.");
+        }
     }
 
     public static void validateNonEmptyStrings(String rawInput) {
@@ -115,10 +124,14 @@ public class Validation {
     }
 
     private static void isValidDecimalFormat(String rawInput) {
-        Double.parseDouble(rawInput);
-        String[] decimalParts = rawInput.split(".");
+        try {
+            Double.parseDouble(rawInput);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Invalid Input! Number must be a valid decimal.");
+        }
         
-        if (decimalParts.length == 1) {
+        String[] decimalParts = rawInput.split(".");
+        if (decimalParts.length == 0) {
             return;
         }
 

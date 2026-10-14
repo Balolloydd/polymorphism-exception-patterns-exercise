@@ -53,14 +53,14 @@ public class Input {
             try {
                 System.out.print(prompt);
                 name = sc.nextLine().trim();
-
                 Validation.validateNonEmptyStrings(name);
+                
                 isValid = true;
             } catch (IllegalArgumentException e) {
                 UserInterface.displayFeedback(e.getMessage());
             }
         } while (!isValid);
-
+        
         return name;
     }
 
@@ -72,8 +72,12 @@ public class Input {
             try {
                 System.out.print(prompt);
                 rawInput = sc.nextLine().trim();
+                
+                Validation.validateWeight(rawInput);
+                if (Double.parseDouble(rawInput) > maxWeight) {
+                    throw new IllegalArgumentException("Invalid Input! Weight must be less than the Max Weight of " + maxWeight + ".");
+                }
 
-                Validation.validateWeight(rawInput, maxWeight);
                 isValid = true;
             } catch (NumberFormatException e) {
                 UserInterface.displayFeedback(e.getMessage());

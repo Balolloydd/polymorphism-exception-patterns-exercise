@@ -14,6 +14,7 @@ public class DeliverySystem {
     public void run() {
         boolean running = true;
 
+        UserInterface.displayTitle("PARCEL DELIVERY SYSTEM");
         while (running) {
             try {
                 UserInterface.displayMainMenu();
@@ -29,6 +30,8 @@ public class DeliverySystem {
                 }
             } catch (NumberFormatException e) {
                 UserInterface.displayFeedback(e.getMessage());
+            } catch (NullPointerException e) {
+                UserInterface.displayFeedback(e.getMessage());
             } catch (IllegalStateException e) {
                 UserInterface.displayFeedback(e.getMessage());
             } catch (KeyAlreadyExistsException e) {
@@ -37,6 +40,8 @@ public class DeliverySystem {
                 UserInterface.displayFeedback(e.getMessage());
             }
         }
+
+        UserInterface.displayFeedback("Exiting the Program. Goodbye!");
     }   
 
     private void addParcel() {
@@ -52,15 +57,17 @@ public class DeliverySystem {
         int choice = Input.readChoice("Input Choice: ", 1, 3);
 
         switch (choice) {
-            case 1: maxWeight = ParcelType.DOCUMENT.getMaxWeight();
-            case 2: maxWeight = ParcelType.BOX.getMaxWeight();
-            case 3: maxWeight = ParcelType.FRAGILE.getMaxWeight();
+            case 1: maxWeight = ParcelType.DOCUMENT.getMaxWeight(); break;
+            case 2: maxWeight = ParcelType.BOX.getMaxWeight(); break;
+            case 3: maxWeight = ParcelType.FRAGILE.getMaxWeight(); break;
             default: maxWeight = -1;
         }
 
+        UserInterface.displayTitle("ADD PARCEL");
+
         trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
         receiverName = Input.readReceiverName("Input Receiver Name: ");
-        weight = Input.readWeight(receiverName, maxWeight);
+        weight = Input.readWeight("Input Weight: ", maxWeight);
 
         switch (choice) {
             case 1: 
@@ -86,8 +93,9 @@ public class DeliverySystem {
         }
 
         ParcelManager.getInstance().addParcel(parcel);
+        
         UserInterface.displayServiceMenu();
-        choice = Input.readChoice("Input Choice:", 1, 3);
+        choice = Input.readChoice("Input Choice: ", 1, 3);
 
         switch(choice) {
             case 1: parcel.setDeliveryStrategy(new StandardDelivery()); break;
@@ -104,11 +112,14 @@ public class DeliverySystem {
 
     public void viewAllParcels() {
         Validation.validateEmptyParcelList();
+        
+        UserInterface.displayTitle("PARCELS TABLE");
+        UserInterface.displayParcelTable(ParcelManager.getInstance().getAllParcels());
     }
 
     public void changeDeliveryService() {
         Validation.validateEmptyParcelList();
-        UserInterface.displayParcelTable(ParcelManager.getInstance().getAllParcels());
+        UserInterface.displayTitle("CHANGE DELIVERY SERVICE");
 
         String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
         Validation.validateAvailability(trackingNumber, false);
@@ -130,7 +141,8 @@ public class DeliverySystem {
 
     public void markDelivered() {
         Validation.validateEmptyParcelList();
-        
+        UserInterface.displayFeedback("MARK DELIVERED");
+
         String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
         Validation.validateAvailability(trackingNumber, false);
         ParcelManager.getInstance().getParcel(trackingNumber).setDeliveryStatus();
