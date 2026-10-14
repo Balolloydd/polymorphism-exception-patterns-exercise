@@ -1,5 +1,9 @@
 package util;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
+import java.util.LinkedHashMap;
+import app.ParcelManager;
+
 public class Validation {
     private Validation() {} // Prevents Instatiation
 
@@ -63,6 +67,33 @@ public class Validation {
         isInputEmpty(rawInput);
     }
 
+    public static void validateNullObjects(Object object) {
+        if (object == null) {
+            throw new NullPointerException("Something went wrong. Null Detected.");
+        }
+    }
+
+    public static void validateAvailability(String trackingNumber, boolean isAvailable) {
+        if (ParcelManager.getInstance().getParcel(trackingNumber) != null  && isAvailable) {
+            throw new KeyAlreadyExistsException("Invalid Input! The tracking number already exists.");
+        }
+
+        if (ParcelManager.getInstance().getParcel(trackingNumber) == null && !isAvailable) {
+            throw new IllegalArgumentException("Invalid Input! The tracking number does not exist.");
+        }
+    }
+
+    public static void validateEmptyParcelList() {
+        if (ParcelManager.getInstance().getAllParcels().isEmpty()) {
+            throw new NullPointerException("Input some parcels first.");
+        }
+    } 
+
+    public static void validateSameDay(double chargeableWeight) {
+        if (chargeableWeight > 10) {
+            throw new IllegalArgumentException("Same Day Delivery is for Parcels up to 10 kg only.");
+        }
+    }
 
     // Helper Functions of Validation Methods
     private static void hasLeadingZero(String rawInput) {
@@ -95,4 +126,6 @@ public class Validation {
             throw new IllegalArgumentException("Invalid Input! Number must be non-negative.");
         }
     }
+
+    
 }

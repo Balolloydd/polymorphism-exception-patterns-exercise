@@ -1,13 +1,20 @@
 package model;
 
+import util.Validation;
+
 public class Box extends Parcel{
-    private final double MAX_WEIGHT = 50.0;
     private final int length, width, height;
 
     public Box(String trackingNumber, String receiverName, double weight, int length, int width, int height) {
         super(trackingNumber, receiverName, weight);
+        
+        Validation.validateBoxMeasurement(String.valueOf(length));
         this.length = length;
+        
+        Validation.validateBoxMeasurement(String.valueOf(width));
         this.width = width;
+        
+        Validation.validateBoxMeasurement(String.valueOf(height));
         this.height = height;
     }
 
@@ -19,11 +26,6 @@ public class Box extends Parcel{
     @Override
     public double getChargeableWeight() {
         return Math.ceil(Math.max(getWeight(), getVolumetricWeight()));
-    }
-
-    @Override
-    public double getMaxWeight() {
-        return MAX_WEIGHT;
     }
 
     @Override

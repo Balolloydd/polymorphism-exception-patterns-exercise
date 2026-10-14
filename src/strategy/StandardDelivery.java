@@ -5,4 +5,9 @@ public class StandardDelivery implements DeliveryStrategy {
     public double calculateDeliveryCost(double baseFee) {
         return baseFee;
     }
+
+    @Override 
+    public DeliveryType getType() {
+        return DeliveryType.STANDARD;
+    }
 }

@@ -1,5 +1,6 @@
 package util;
 import java.util.Scanner;
+import strategy.DeliveryStrategy;
 
 public class Input {
     private static final Scanner sc = new Scanner(System.in);
@@ -34,8 +35,8 @@ public class Input {
             try {
                 System.out.print(prompt);
                 trackingNumber = sc.nextLine().toUpperCase().trim();
-
                 Validation.validateTrackingNumber(trackingNumber);
+
                 isValid = true;
             } catch (IllegalArgumentException e) {
                 UserInterface.displayFeedback(e.getMessage());

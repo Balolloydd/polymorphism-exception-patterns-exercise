@@ -1,13 +1,14 @@
 package app;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
 import util.Input;
 import util.UserInterface;
-
-import model.Parcel;
-import model.ParcelType;
-import model.Document;
-import model.Fragile;
-import model.Box;
+import util.Validation;
+import model.*;
+import strategy.DeliveryStrategy;
+import strategy.ExpressDelivery;
+import strategy.SameDayDelivery;
+import strategy.StandardDelivery;
 
 public class DeliverySystem {
     public void run() {
@@ -24,9 +25,11 @@ public class DeliverySystem {
                     case 3: changeDeliveryService(); break;
                     case 4: markDelivered(); break;
                     case 5: running = false; break;
-                    default: 
+                    default: UserInterface.displayFeedback("Something went wrong. Try Again.");
                 }
             } catch (NumberFormatException e) {
+                UserInterface.displayFeedback(e.getMessage());
+            } catch (KeyAlreadyExistsException e) {
                 UserInterface.displayFeedback(e.getMessage());
             } catch (IllegalArgumentException e) {
                 UserInterface.displayFeedback(e.getMessage());
@@ -35,6 +38,8 @@ public class DeliverySystem {
     }   
 
     private void addParcel() {
+        DeliveryStrategy strategy = null;
+        ParcelManager instance = ParcelManager.getInstance();
         Parcel parcel;
 
         String trackingNumber, receiverName;
@@ -78,12 +83,30 @@ public class DeliverySystem {
                     handlingNote = Input.readHandlingNote("Input Handling Note: ");
                     parcel = new Fragile(trackingNumber, receiverName, weight, length, width, height, handlingNote);
                     break;
-                default: 
+                default: parcel = null;
             }
 
-            
+            instance.addParcel(parcel);
+            UserInterface.displayServiceMenu();
+            choice = Input.readChoice("Input Choice:", 1, 3);
 
+            switch(choice) {
+                case 1: strategy = new StandardDelivery(); break;
+                case 2: strategy = new ExpressDelivery(); break;
+                case 3: 
+                    Validation.validateSameDay(weight);
+                    strategy = new SameDayDelivery();
+                    break;
+                default: UserInterface.displayFeedback("Something wrong happened. Please Try Again.");
+            }
+            
+            instance.getParcel(trackingNumber).setDeliveryStrategy(strategy);
+            double deliveryFee = strategy.calculateDeliveryCost(instance.getParcel(trackingNumber).getBaseFee());
+
+            UserInterface.displayFeedback(String.format("Parcel Added Successfully!\nDelivery Fee: %.2f", deliveryFee));
         } catch (NumberFormatException e) {
+            UserInterface.displayFeedback(e.getMessage());
+        } catch (NullPointerException e) {
             UserInterface.displayFeedback(e.getMessage());
         } catch (IllegalArgumentException e) {
             UserInterface.displayFeedback(e.getMessage());
@@ -91,14 +114,14 @@ public class DeliverySystem {
     }
 
     public void viewAllParcels() {
-
+        Validation.validateEmptyParcelList();
     }
 
     public void changeDeliveryService() {
-
+        Validation.validateEmptyParcelList();
     }
 
     public void markDelivered() {
-
+        Validation.validateEmptyParcelList();
     }
 }
