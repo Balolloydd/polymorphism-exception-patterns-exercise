@@ -5,6 +5,7 @@ import util.Input;
 import util.UserInterface;
 import util.Validation;
 import model.*;
+import constant.DeliveryType;
 import constant.ParcelType;
 import strategy.ExpressDelivery;
 import strategy.SameDayDelivery;
@@ -65,7 +66,7 @@ public class DeliverySystem {
 
         UserInterface.displayTitle("ADD PARCEL");
 
-        trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
+        trackingNumber = Input.readTrackingNumber("Input Tracking Number: ", false);
         receiverName = Input.readReceiverName("Input Receiver Name: ");
         weight = Input.readWeight("Input Weight: ", maxWeight);
 
@@ -92,20 +93,30 @@ public class DeliverySystem {
             default: parcel = null;
         }
 
-        ParcelManager.getInstance().addParcel(parcel);
-        
-        UserInterface.displayServiceMenu();
-        choice = Input.readChoice("Input Choice: ", 1, 3);
+        boolean isValidService = false;
 
-        switch(choice) {
-            case 1: parcel.setDeliveryStrategy(new StandardDelivery()); break;
-            case 2: parcel.setDeliveryStrategy(new StandardDelivery()); break;
-            case 3: 
-                Validation.validateSameDay(parcel.getChargeableWeight());
-                parcel.setDeliveryStrategy(new StandardDelivery());
-                break;
-            default: UserInterface.displayFeedback("Something wrong happened. Please Try Again.");
-        }
+        do {
+            try {
+                UserInterface.displayServiceMenu();
+                choice = Input.readChoice("Input Choice: ", 1, 3);
+
+                switch(choice) {
+                    case 1: parcel.setDeliveryStrategy(new StandardDelivery()); break;
+                    case 2: parcel.setDeliveryStrategy(new ExpressDelivery()); break;
+                    case 3: 
+                        Validation.validateSameDay(parcel.getChargeableWeight());
+                        parcel.setDeliveryStrategy(new SameDayDelivery());
+                        break;
+                    default: UserInterface.displayFeedback("Something wrong happened. Please Try Again.");
+                }
+
+                isValidService = true;
+            } catch (IllegalArgumentException e) {
+                UserInterface.displayFeedback(e.getMessage());
+            }
+        } while (!isValidService);
+
+        ParcelManager.getInstance().addParcel(parcel);
 
         UserInterface.displayFeedback(String.format("Parcel Added Successfully!\nDelivery Fee: %.2f", parcel.getDeliveryFee()));
     }
@@ -121,19 +132,28 @@ public class DeliverySystem {
         Validation.validateEmptyParcelList();
         UserInterface.displayTitle("CHANGE DELIVERY SERVICE");
 
-        String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
-        Validation.validateAvailability(trackingNumber, false);
+        String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ", true);
         Parcel parcel = ParcelManager.getInstance().getParcel(trackingNumber);
 
         UserInterface.displayServiceMenu();
-        int choice = Input.readChoice("Input Choice:", 1, 3);
+        int choice = Input.readChoice("Input Choice: ", 1, 3);
 
         switch(choice) {
-            case 1: parcel.setDeliveryStrategy(new StandardDelivery()); break;
-            case 2: parcel.setDeliveryStrategy(new ExpressDelivery()); break;
+            case 1: 
+                Validation.validateSameService(parcel, DeliveryType.STANDARD);
+                parcel.setDeliveryStrategy(new StandardDelivery()); 
+                
+                break;
+            case 2: 
+                Validation.validateSameService(parcel, DeliveryType.EXPRESS);
+                parcel.setDeliveryStrategy(new ExpressDelivery()); 
+                
+                break;
             case 3: 
+                Validation.validateSameService(parcel, DeliveryType.SAME_DAY);
                 Validation.validateSameDay(parcel.getChargeableWeight());
                 parcel.setDeliveryStrategy(new SameDayDelivery());
+                
                 break;
             default: UserInterface.displayFeedback("Something wrong happened. Please Try Again.");
         }
@@ -143,8 +163,7 @@ public class DeliverySystem {
         Validation.validateEmptyParcelList();
         UserInterface.displayFeedback("MARK DELIVERED");
 
-        String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ");
-        Validation.validateAvailability(trackingNumber, false);
+        String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ", true);
         ParcelManager.getInstance().getParcel(trackingNumber).setDeliveryStatus();
     }
 }

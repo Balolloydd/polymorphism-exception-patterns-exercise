@@ -78,29 +78,29 @@ public class UserInterface {
         }
 
         int totalLength = trackingNumberLength + typeLength + receiverLength + cWeightLength + serviceLength + deliveryFeeLength + statusLength;
-        System.out.println("=".repeat(totalLength + 10));
+        System.out.println("=".repeat(totalLength + 22));
 
-        System.out.print(String.format("| %-" + trackingNumberLength + "s ", fields[0]));
-        System.out.print(String.format("%-" + typeLength + "s ", fields[1]));
-        System.out.print(String.format("%-" + receiverLength + "s ", fields[2]));
-        System.out.print(String.format("%-" + cWeightLength + "s ", fields[3]));
-        System.out.print(String.format("%-" + serviceLength + "s ", fields[4]));
-        System.out.print(String.format("%-" + deliveryFeeLength + "s ", fields[5]));
-        System.out.print(String.format("%-" + statusLength + "s |", fields[6]));
+        System.out.print(String.format("| %-" + trackingNumberLength + "s |", fields[0]));
+        System.out.print(String.format(" %-" + typeLength + "s |", fields[1]));
+        System.out.print(String.format(" %-" + receiverLength + "s |", fields[2]));
+        System.out.print(String.format(" %-" + cWeightLength + "s |", fields[3]));
+        System.out.print(String.format(" %-" + serviceLength + "s |", fields[4]));
+        System.out.print(String.format(" %-" + deliveryFeeLength + "s |", fields[5]));
+        System.out.println(String.format(" %-" + statusLength + "s |", fields[6]));
 
-        System.out.println("=".repeat(totalLength + 10));
+        System.out.println("=".repeat(totalLength + 22));
 
         for (Parcel parcel : parcels) {
-            System.out.print(String.format("| %-" + trackingNumberLength + "s ", parcel.getTrackingNumber()));
-            System.out.print(String.format("%-" + typeLength + "s ", parcel.getType().toString()));
-            System.out.print(String.format("%-" + receiverLength + "s ", parcel.getReceiverName()));
-            System.out.print(String.format("%-" + cWeightLength + ".2f ", parcel.getChargeableWeight()));
-            System.out.print(String.format("%-" + serviceLength + "s ", parcel.getDeliveryType().toString()));
-            System.out.print(String.format("%-" + deliveryFeeLength + ".2f ", parcel.getDeliveryFee()));
-            System.out.print(String.format("%-" + statusLength + "s |", parcel.getDeliveryStatus().toString()));
+            System.out.print(String.format("| %-" + trackingNumberLength + "s |", parcel.getTrackingNumber()));
+            System.out.print(String.format(" %-" + typeLength + "s |", parcel.getType().toString()));
+            System.out.print(String.format(" %-" + receiverLength + "s |", parcel.getReceiverName()));
+            System.out.print(String.format(" %-" + cWeightLength + ".2f |", parcel.getChargeableWeight()));
+            System.out.print(String.format(" %-" + serviceLength + "s |", parcel.getDeliveryType().toString()));
+            System.out.print(String.format(" %-" + deliveryFeeLength + ".2f |", parcel.getDeliveryFee()));
+            System.out.println(String.format(" %-" + statusLength + "s |", parcel.getDeliveryStatus().toString()));
         }
 
-        System.out.println("=".repeat(totalLength + 10));
+        System.out.println("=".repeat(totalLength + 22));
     }
 
     private static int getLongestElementLength(String[] parts) {

@@ -31,7 +31,7 @@ public class Box extends Parcel{
 
     @Override
     public double getBaseFee() {
-        return 40.0 * getChargeableWeight();
+        return 40.0 * this.getChargeableWeight();
     }
 
     public double getVolumetricWeight() {

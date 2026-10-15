@@ -26,7 +26,7 @@ public class Input {
         return Integer.parseInt(rawInput);
     }
 
-    public static String readTrackingNumber(String prompt) {
+    public static String readTrackingNumber(String prompt, boolean mustExist) {
         boolean isValid = false;
         String trackingNumber = "";
 
@@ -34,7 +34,7 @@ public class Input {
             try {
                 System.out.print(prompt);
                 trackingNumber = sc.nextLine().toUpperCase().trim();
-                Validation.validateTrackingNumber(trackingNumber);
+                Validation.validateTrackingNumber(trackingNumber, mustExist);
 
                 isValid = true;
             } catch (IllegalArgumentException e) {

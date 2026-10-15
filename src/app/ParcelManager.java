@@ -23,7 +23,7 @@ public class ParcelManager {
         Validation.validateNullObjects(parcel);
         String trackingNumber = parcel.getTrackingNumber();
 
-        Validation.validateAvailability(trackingNumber, true);
+        Validation.validateTrackingNumber(trackingNumber, false);
         parcels.put(trackingNumber, parcel);
     }
 
@@ -33,5 +33,9 @@ public class ParcelManager {
 
     public Parcel getParcel(String trackingNumber) {
         return parcels.get(trackingNumber);
+    }
+
+    public boolean containsKey(String trackingNumber) {
+        return parcels.containsKey(trackingNumber);
     }
 }

@@ -15,7 +15,7 @@ public abstract class Parcel {
     public abstract double getBaseFee();
 
     protected Parcel(String trackingNumber, String receiverName, double weight) {
-        Validation.validateTrackingNumber(trackingNumber);
+        Validation.validateTrackingNumber(trackingNumber, false);
         this.trackingNumber = trackingNumber;
         
         Validation.validateNonEmptyStrings(receiverName);

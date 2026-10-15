@@ -1,59 +1,70 @@
 package util;
 
-import javax.management.openmbean.KeyAlreadyExistsException;
 import app.ParcelManager;
+import model.Parcel;
 import constant.DeliveryStatus;
+import constant.DeliveryType;
 
 public class Validation {
     private Validation() {} // Prevents Instatiation
-
-    public static void validateChoice(String rawInput, int min, int max) {
+    
+    public static void validateWeight(String rawInput) {
         isInputEmpty(rawInput);
         isNegative(rawInput);
         hasLeadingZero(rawInput);
         
-        int choice;
+        double number; 
         try {
-            choice = Integer.parseInt(rawInput);
+            number = Double.parseDouble(rawInput);
         } catch (NumberFormatException e) {
-            throw new NumberFormatException("Invalid Input! Number must be a valid integer.");
+            throw new NumberFormatException("Invalid Input! Number must be a vald decimal.");
         }
         
+        if (!Double.isFinite(number)) {
+            throw new IllegalArgumentException("Invalid Input! Number must be finite.");
+        }
+
+        if (number == 0) {
+            throw new IllegalArgumentException("Invalid Input! Number must not be zero.");
+        }
+
+        String[] decimalParts = rawInput.split("\\.");
+        if (decimalParts.length == 0) {
+            return;
+        }
+
+        if (decimalParts[1].length() > 2) {
+            throw new NumberFormatException("Invalid Input! Number must have up to Two Decimal Places Only.");
+        }
+    }
+    
+    public static void validateChoice(String rawInput, int min, int max) {
+        isValidInteger(rawInput);
+        
+        int choice = Integer.parseInt(rawInput);
         if (choice < min || choice > max) {
             throw new IllegalArgumentException("Invalid Input! Please enter a number between " + min + " and " + max + ".");
         }
     }
 
-    public static void validateTrackingNumber(String trackingNumber) {
+    public static void validateTrackingNumber(String trackingNumber, boolean mustExist) {
         isInputEmpty(trackingNumber);
         
         if (!trackingNumber.matches("^ABC[0-9]{4}$")) {
             throw new IllegalArgumentException("Invalid Input! Input does not match format: ABC0001.");
         }
-    }
 
-    public static void validateWeight(String rawInput) {
-        isInputEmpty(rawInput);
-        isNegative(rawInput);
-        hasLeadingZero(rawInput);
-        isValidDecimalFormat(rawInput);
-        
-        double weight;
-        try {
-            weight = Double.parseDouble(rawInput);
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("Invalid Input! Number must be a valid decimal.");
+        if (ParcelManager.getInstance().containsKey(trackingNumber) && !mustExist) {
+            throw new IllegalArgumentException("The tracking number already exists.");
         }
-        
-        if (!Double.isFinite(weight)) {
-            throw new IllegalArgumentException("Invalid Input! Weight must be a finite number.");
+
+        if (!ParcelManager.getInstance().containsKey(trackingNumber) && mustExist) {
+            throw new IllegalArgumentException("The tracking number does not exist.");
         }
     }
 
     public static void validateNumberOfPages(String rawInput) {
-        isInputEmpty(rawInput);
-        isNegative(rawInput);
-        hasLeadingZero(rawInput);
+        isValidInteger(rawInput);
 
         if (Integer.parseInt(rawInput) > 100) {
             throw new IllegalArgumentException("Invalid Input! Number must be lower than 100.");
@@ -61,15 +72,7 @@ public class Validation {
     }
 
     public static void validateBoxMeasurement(String rawInput) {
-        isInputEmpty(rawInput);
-        isNegative(rawInput);
-        hasLeadingZero(rawInput);
-        
-        try {
-            Integer.parseInt(rawInput);
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("Invalid Input! Number must be a valid integer.");
-        }
+        isValidInteger(rawInput);
     }
 
     public static void validateNonEmptyStrings(String rawInput) {
@@ -82,16 +85,6 @@ public class Validation {
         }
     }
 
-    public static void validateAvailability(String trackingNumber, boolean isAvailable) {
-        if (ParcelManager.getInstance().getParcel(trackingNumber) != null  && isAvailable) {
-            throw new KeyAlreadyExistsException("Invalid Input! The tracking number already exists.");
-        }
-
-        if (ParcelManager.getInstance().getParcel(trackingNumber) == null && !isAvailable) {
-            throw new IllegalArgumentException("Invalid Input! The tracking number does not exist.");
-        }
-    }
-
     public static void validateEmptyParcelList() {
         if (ParcelManager.getInstance().getAllParcels().isEmpty()) {
             throw new NullPointerException("Input some parcels first.");
@@ -101,6 +94,12 @@ public class Validation {
     public static void validateSameDay(double chargeableWeight) {
         if (chargeableWeight > 10) {
             throw new IllegalArgumentException("Same Day Delivery is for Parcels up to 10 kg only.");
+        }
+    }
+
+    public static void validateSameService(Parcel parcel, DeliveryType deliveryType) {
+        if (parcel.getDeliveryType() == deliveryType) {
+            throw new IllegalArgumentException("Service selected is the same with the current.");
         }
     }
 
@@ -123,26 +122,21 @@ public class Validation {
         }
     }
 
-    private static void isValidDecimalFormat(String rawInput) {
-        try {
-            Double.parseDouble(rawInput);
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("Invalid Input! Number must be a valid decimal.");
-        }
-        
-        String[] decimalParts = rawInput.split(".");
-        if (decimalParts.length == 0) {
-            return;
-        }
-
-        if (decimalParts[1].length() > 2) {
-            throw new NumberFormatException("Invalid Input! Number must have up to Two Decimal Places Only.");
-        }
-    }
-
     private static void isNegative(String rawInput) {
         if (rawInput.startsWith("-")) {
             throw new IllegalArgumentException("Invalid Input! Number must be non-negative.");
+        }
+    }
+
+    private static void isValidInteger(String rawInput) {
+        isInputEmpty(rawInput);
+        isNegative(rawInput);
+        hasLeadingZero(rawInput);
+
+        try {
+            Integer.parseInt(rawInput);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Invalid Input! Number must be a valid integer.");
         }
     }
 
