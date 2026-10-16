@@ -71,7 +71,7 @@ public class UserInterface {
             trackingNumberLength = Math.max(trackingNumberLength, parcel.getTrackingNumber().length());
             typeLength = Math.max(typeLength, parcel.getType().toString().length());
             receiverLength = Math.max(receiverLength, parcel.getReceiverName().length());
-            cWeightLength = Math.max(cWeightLength, String.format("%.2f", parcel.getChargeableWeight()).length());
+            cWeightLength = Math.max(cWeightLength, String.format("%.3f", parcel.getChargeableWeight()).length());
             serviceLength = Math.max(serviceLength, parcel.getDeliveryType().toString().length());
             deliveryFeeLength = Math.max(deliveryFeeLength, String.format("%.2f", parcel.getDeliveryFee()).length());
             statusLength = Math.max(statusLength, parcel.getDeliveryStatus().toString().length());
@@ -94,7 +94,7 @@ public class UserInterface {
             System.out.print(String.format("| %-" + trackingNumberLength + "s |", parcel.getTrackingNumber()));
             System.out.print(String.format(" %-" + typeLength + "s |", parcel.getType().toString()));
             System.out.print(String.format(" %-" + receiverLength + "s |", parcel.getReceiverName()));
-            System.out.print(String.format(" %-" + cWeightLength + ".2f |", parcel.getChargeableWeight()));
+            System.out.print(String.format(" %-" + cWeightLength + ".3f |", parcel.getChargeableWeight()));
             System.out.print(String.format(" %-" + serviceLength + "s |", parcel.getDeliveryType().toString()));
             System.out.print(String.format(" %-" + deliveryFeeLength + ".2f |", parcel.getDeliveryFee()));
             System.out.println(String.format(" %-" + statusLength + "s |", parcel.getDeliveryStatus().toString()));
