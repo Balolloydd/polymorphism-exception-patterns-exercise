@@ -74,6 +74,10 @@ public class Validation {
         if (measurement <= 0) {
             throw new IllegalArgumentException("Invalid Input! Number must be a valid integer.");
         }
+
+        if (measurement > 400) {
+            throw new IllegalArgumentException("Invalid Input! Parcel size must not exceed 400 cm.");
+        }
     }
 
     public static void validateNonEmptyStrings(String rawInput) {

@@ -132,6 +132,8 @@ public class DeliverySystem {
         String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ", true);
         Parcel parcel = ParcelManager.getInstance().getParcel(trackingNumber);
 
+        Validation.validateDeliveryStatus(parcel.getDeliveryStatus());
+
         UserInterface.displayServiceMenu();
         int choice = Input.readChoice("Input Choice: ", 1, 3);
 
