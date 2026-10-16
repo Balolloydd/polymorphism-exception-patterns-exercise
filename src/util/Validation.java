@@ -6,7 +6,7 @@ import constant.DeliveryStatus;
 import constant.DeliveryType;
 
 public class Validation {
-    private static final String WEIGHT_PATTERN = "(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,2})?";
+    private static final String WEIGHT_PATTERN = "(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,3})?";
     private static final String POSITIVE_INTEGER_PATTERN = "[1-9][0-9]*";
     private static final String TRACKING_NUMBER_PATTERN = "ABC[0-9]{4}";
 
@@ -16,7 +16,7 @@ public class Validation {
         isInputEmpty(rawInput);
 
         if (!rawInput.matches(WEIGHT_PATTERN)) {
-            throw new NumberFormatException("Invalid Input! Number must be a valid decimal with up to two decimal places.");
+            throw new NumberFormatException("Invalid Input! Number must be a valid decimal with up to three decimal places.");
         }
 
         isValidDouble(Double.parseDouble(rawInput));
@@ -36,7 +36,7 @@ public class Validation {
         isValidDouble(weight);
 
         if (weight > maxWeight) {
-            throw new IllegalArgumentException("Invalid Input! Weight must be less than the Max Weight of " + maxWeight + ".");
+            throw new IllegalArgumentException("Invalid Input! Weight must not exceed the Max Weight of " + maxWeight + " kg.");
         }
     }
     
@@ -62,7 +62,7 @@ public class Validation {
 
     public static void validateNumberOfPages(int numberOfPages) {
         if (numberOfPages < 1 || numberOfPages > 100) {
-            throw new IllegalArgumentException("Invalid Input! Number must be lower than 100.");
+            throw new IllegalArgumentException("Invalid Input! Number must not exceed 100.");
         }
     }
 

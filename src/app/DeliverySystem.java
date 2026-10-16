@@ -18,7 +18,7 @@ public class DeliverySystem {
         while (running) {
             try {
                 UserInterface.displayMainMenu();
-                int choice = Input.readChoice("Choice: ", 1, 5);
+                int choice = Input.readChoice("Choice (1-5): ", 1, 5);
 
                 switch (choice) {
                     case 1: addParcel(); break;
@@ -54,7 +54,7 @@ public class DeliverySystem {
         String handlingNote;
         
         UserInterface.displayParcelMenu();
-        int choice = Input.readChoice("Input Choice: ", 1, 3);
+        int choice = Input.readChoice("Input Choice (1-3): ", 1, 3);
 
         switch (choice) {
             case 1: maxWeight = ParcelType.DOCUMENT.getMaxWeight(); break;
@@ -65,26 +65,26 @@ public class DeliverySystem {
 
         UserInterface.displayTitle("ADD PARCEL");
 
-        trackingNumber = Input.readTrackingNumber("Input Tracking Number: ", false);
+        trackingNumber = Input.readTrackingNumber("Input Tracking Number (ABC0001): ", false);
         receiverName = Input.readReceiverName("Input Receiver Name: ");
-        weight = Input.readWeight("Input Weight: ", maxWeight);
+        weight = Input.readWeight("Input Weight (kg): ", maxWeight);
 
         switch (choice) {
             case 1: 
-                numOfPages = Input.readNumberOfPages("Input Number of Pages: ");
+                numOfPages = Input.readNumberOfPages("Input Number of Pages (1-100): ");
                 parcel = new Document(trackingNumber, receiverName, weight, numOfPages);
                 break;
             case 2: 
-                length = Input.readBoxMeasurement("Input Length: ");
-                width = Input.readBoxMeasurement("Input Width: ");
-                height = Input.readBoxMeasurement("Input Height: ");
+                length = Input.readBoxMeasurement("Input Length (cm): ");
+                width = Input.readBoxMeasurement("Input Width (cm): ");
+                height = Input.readBoxMeasurement("Input Height (cm): ");
 
                 parcel = new Box(trackingNumber, receiverName, weight, length, width, height);
                 break;
             case 3: 
-                length = Input.readBoxMeasurement("Input Length: ");
-                width = Input.readBoxMeasurement("Input Width: ");
-                height = Input.readBoxMeasurement("Input Height: ");
+                length = Input.readBoxMeasurement("Input Length (cm): ");
+                width = Input.readBoxMeasurement("Input Width (cm): ");
+                height = Input.readBoxMeasurement("Input Height (cm): ");
 
                 handlingNote = Input.readHandlingNote("Input Handling Note: ");
                 parcel = new Fragile(trackingNumber, receiverName, weight, length, width, height, handlingNote);
@@ -97,7 +97,7 @@ public class DeliverySystem {
         do {
             try {
                 UserInterface.displayServiceMenu();
-                choice = Input.readChoice("Input Choice: ", 1, 3);
+                choice = Input.readChoice("Input Choice (1-3): ", 1, 3);
 
                 switch(choice) {
                     case 1: parcel.setDeliveryStrategy(new StandardDelivery()); break;
@@ -129,13 +129,13 @@ public class DeliverySystem {
         Validation.validateEmptyParcelList();
         UserInterface.displayTitle("CHANGE DELIVERY SERVICE");
 
-        String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ", true);
+        String trackingNumber = Input.readTrackingNumber("Input Tracking Number (ABC0001): ", true);
         Parcel parcel = ParcelManager.getInstance().getParcel(trackingNumber);
 
         Validation.validateDeliveryStatus(parcel.getDeliveryStatus());
 
         UserInterface.displayServiceMenu();
-        int choice = Input.readChoice("Input Choice: ", 1, 3);
+        int choice = Input.readChoice("Input Choice (1-3): ", 1, 3);
 
         switch(choice) {
             case 1: 
@@ -163,7 +163,7 @@ public class DeliverySystem {
         Validation.validateEmptyParcelList();
         UserInterface.displayTitle("MARK DELIVERED");
 
-        String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ", true);
+        String trackingNumber = Input.readTrackingNumber("Input Tracking Number (ABC0001): ", true);
         ParcelManager.getInstance().getParcel(trackingNumber).setDeliveryStatus();
         
         UserInterface.displayFeedback("Successfully updated Parcel Status!");
