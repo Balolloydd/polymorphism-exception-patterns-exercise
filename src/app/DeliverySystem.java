@@ -1,16 +1,15 @@
 package app;
-
 import javax.management.openmbean.KeyAlreadyExistsException;
-import util.Input;
-import util.UserInterface;
-import util.Validation;
-import model.*;
+
 import constant.DeliveryType;
 import constant.ParcelType;
+
 import strategy.ExpressDelivery;
 import strategy.SameDayDelivery;
 import strategy.StandardDelivery;
 
+import util.*;
+import model.*;
 public class DeliverySystem {
     public void run() {
         boolean running = true;
@@ -104,7 +103,6 @@ public class DeliverySystem {
                     case 1: parcel.setDeliveryStrategy(new StandardDelivery()); break;
                     case 2: parcel.setDeliveryStrategy(new ExpressDelivery()); break;
                     case 3: 
-                        Validation.validateSameDay(parcel.getChargeableWeight());
                         parcel.setDeliveryStrategy(new SameDayDelivery());
                         break;
                     default: UserInterface.displayFeedback("Something wrong happened. Please Try Again.");
@@ -117,8 +115,7 @@ public class DeliverySystem {
         } while (!isValidService);
 
         ParcelManager.getInstance().addParcel(parcel);
-
-        UserInterface.displayFeedback(String.format("Parcel Added Successfully!\nDelivery Fee: %.2f", parcel.getDeliveryFee()));
+        UserInterface.displayFeedback(String.format("Parcel Added Successfully!\nDelivery Fee: Php %.2f", parcel.getDeliveryFee()));
     }
 
     public void viewAllParcels() {
@@ -151,19 +148,22 @@ public class DeliverySystem {
                 break;
             case 3: 
                 Validation.validateSameService(parcel, DeliveryType.SAME_DAY);
-                Validation.validateSameDay(parcel.getChargeableWeight());
                 parcel.setDeliveryStrategy(new SameDayDelivery());
                 
                 break;
             default: UserInterface.displayFeedback("Something wrong happened. Please Try Again.");
         }
+
+        UserInterface.displayFeedback(String.format("Delivery Service Changed!\nNew Fee: Php %.2f", parcel.getDeliveryFee()));
     }
 
     public void markDelivered() {
         Validation.validateEmptyParcelList();
-        UserInterface.displayFeedback("MARK DELIVERED");
+        UserInterface.displayTitle("MARK DELIVERED");
 
         String trackingNumber = Input.readTrackingNumber("Input Tracking Number: ", true);
         ParcelManager.getInstance().getParcel(trackingNumber).setDeliveryStatus();
+        
+        UserInterface.displayFeedback("Successfully updated Parcel Status!");
     }
 }

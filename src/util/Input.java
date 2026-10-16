@@ -1,4 +1,5 @@
 package util;
+import app.ParcelManager;
 import java.util.Scanner;
 
 public class Input {
@@ -34,7 +35,11 @@ public class Input {
             try {
                 System.out.print(prompt);
                 trackingNumber = sc.nextLine().toUpperCase().trim();
-                Validation.validateTrackingNumber(trackingNumber, mustExist);
+                Validation.validateTrackingNumber(trackingNumber);
+
+                if (!mustExist) {
+                    ParcelManager.getInstance().ensureTrackingNumberAvailable(trackingNumber);
+                }
 
                 isValid = true;
             } catch (IllegalArgumentException e) {
@@ -74,9 +79,7 @@ public class Input {
                 rawInput = sc.nextLine().trim();
                 
                 Validation.validateWeight(rawInput);
-                if (Double.parseDouble(rawInput) > maxWeight) {
-                    throw new IllegalArgumentException("Invalid Input! Weight must be less than the Max Weight of " + maxWeight + ".");
-                }
+                Validation.validateWeight(Double.parseDouble(rawInput), maxWeight);
 
                 isValid = true;
             } catch (NumberFormatException e) {

@@ -21,10 +21,17 @@ public class ParcelManager {
     
     public void addParcel(Parcel parcel) {
         Validation.validateNullObjects(parcel);
-        String trackingNumber = parcel.getTrackingNumber();
 
-        Validation.validateTrackingNumber(trackingNumber, false);
-        parcels.put(trackingNumber, parcel);
+        if (!parcel.hasDeliveryStrategy()) {
+            throw new IllegalStateException("Select a delivery service before adding the parcel.");
+        }
+
+        String trackingNumber = parcel.getTrackingNumber();
+        Validation.validateTrackingNumber(trackingNumber);
+
+        if (parcels.putIfAbsent(trackingNumber, parcel) != null) {
+            throw new IllegalArgumentException("The tracking number already exists.");
+        }
     }
 
     public Collection<Parcel> getAllParcels() {
@@ -32,10 +39,21 @@ public class ParcelManager {
     }
 
     public Parcel getParcel(String trackingNumber) {
-        return parcels.get(trackingNumber);
+        Validation.validateTrackingNumber(trackingNumber);
+
+        Parcel parcel = parcels.get(trackingNumber);
+        if (parcel == null) {
+            throw new IllegalArgumentException("The tracking number does not exist.");
+        }
+
+        return parcel;
     }
 
-    public boolean containsKey(String trackingNumber) {
-        return parcels.containsKey(trackingNumber);
+    public void ensureTrackingNumberAvailable(String trackingNumber) {
+        Validation.validateTrackingNumber(trackingNumber);
+
+        if (parcels.containsKey(trackingNumber)) {
+            throw new IllegalArgumentException("The tracking number already exists.");
+        }
     }
 }

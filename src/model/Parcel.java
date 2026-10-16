@@ -9,19 +9,19 @@ public abstract class Parcel {
     private final double weight;
     private DeliveryStatus status;
     private DeliveryStrategy strategy;
-    
+
     public abstract ParcelType getType();
     public abstract double getChargeableWeight();
     public abstract double getBaseFee();
 
     protected Parcel(String trackingNumber, String receiverName, double weight) {
-        Validation.validateTrackingNumber(trackingNumber, false);
+        Validation.validateTrackingNumber(trackingNumber);
         this.trackingNumber = trackingNumber;
         
         Validation.validateNonEmptyStrings(receiverName);
         this.receiverName = receiverName;
-        
-        Validation.validateWeight(String.valueOf(weight));
+
+        Validation.isValidDouble(weight);
         this.weight = weight;
 
         this.status = DeliveryStatus.PENDING;
@@ -34,6 +34,12 @@ public abstract class Parcel {
 
     public void setDeliveryStrategy(DeliveryStrategy strategy) {
         Validation.validateNullObjects(strategy);
+        Validation.validateDeliveryStatus(getDeliveryStatus());
+
+        if (strategy.getType() == DeliveryType.SAME_DAY) {
+            Validation.validateSameDay(getChargeableWeight());
+        }
+
         this.strategy = strategy;
     }
 
@@ -58,10 +64,22 @@ public abstract class Parcel {
     }
 
     public double getDeliveryFee() {
-        return strategy.calculateDeliveryCost(getBaseFee());
+        return requireDeliveryStrategy().calculateDeliveryCost(getBaseFee());
     }
 
     public DeliveryType getDeliveryType() {
-        return strategy.getType();
+        return requireDeliveryStrategy().getType();
+    }
+
+    public boolean hasDeliveryStrategy() {
+        return strategy != null;
+    }
+
+    private DeliveryStrategy requireDeliveryStrategy() {
+        if (!hasDeliveryStrategy()) {
+            throw new IllegalStateException("Select a delivery service before using this parcel.");
+        }
+
+        return strategy;
     }
 }

@@ -8,7 +8,7 @@ public class Fragile extends Box {
     private final String handlingNote;
 
     public Fragile(String trackingNumber, String receiverName, double weight, int length, int width, int height, String handlingNote) {
-        super(trackingNumber, receiverName, weight, length, width, height);
+        super(trackingNumber, receiverName, weight, length, width, height, ParcelType.FRAGILE);
         
         Validation.validateNonEmptyStrings(handlingNote);
         this.handlingNote = handlingNote;

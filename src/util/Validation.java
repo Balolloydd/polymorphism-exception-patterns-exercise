@@ -6,73 +6,74 @@ import constant.DeliveryStatus;
 import constant.DeliveryType;
 
 public class Validation {
+    private static final String WEIGHT_PATTERN = "(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,2})?";
+    private static final String POSITIVE_INTEGER_PATTERN = "[1-9][0-9]*";
+    private static final String TRACKING_NUMBER_PATTERN = "ABC[0-9]{4}";
+
     private Validation() {} // Prevents Instatiation
     
     public static void validateWeight(String rawInput) {
         isInputEmpty(rawInput);
-        isNegative(rawInput);
-        hasLeadingZero(rawInput);
-        
-        double number; 
-        try {
-            number = Double.parseDouble(rawInput);
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("Invalid Input! Number must be a vald decimal.");
+
+        if (!rawInput.matches(WEIGHT_PATTERN)) {
+            throw new NumberFormatException("Invalid Input! Number must be a valid decimal with up to two decimal places.");
         }
-        
+
+        isValidDouble(Double.parseDouble(rawInput));
+    }
+
+    public static void isValidDouble(double number) {
         if (!Double.isFinite(number)) {
             throw new IllegalArgumentException("Invalid Input! Number must be finite.");
         }
 
-        if (number == 0) {
-            throw new IllegalArgumentException("Invalid Input! Number must not be zero.");
+        if (number <= 0) {
+            throw new IllegalArgumentException("Invalid Input! Number must be greater than zero.");
         }
+    }
 
-        String[] decimalParts = rawInput.split("\\.");
-        if (decimalParts.length == 0) {
-            return;
-        }
+    public static void validateWeight(double weight, double maxWeight) {
+        isValidDouble(weight);
 
-        if (decimalParts[1].length() > 2) {
-            throw new NumberFormatException("Invalid Input! Number must have up to Two Decimal Places Only.");
+        if (weight > maxWeight) {
+            throw new IllegalArgumentException("Invalid Input! Weight must be less than the Max Weight of " + maxWeight + ".");
         }
     }
     
     public static void validateChoice(String rawInput, int min, int max) {
-        isValidInteger(rawInput);
-        
-        int choice = Integer.parseInt(rawInput);
+        int choice = parsePositiveInteger(rawInput);
+
         if (choice < min || choice > max) {
             throw new IllegalArgumentException("Invalid Input! Please enter a number between " + min + " and " + max + ".");
         }
     }
 
-    public static void validateTrackingNumber(String trackingNumber, boolean mustExist) {
+    public static void validateTrackingNumber(String trackingNumber) {
         isInputEmpty(trackingNumber);
         
-        if (!trackingNumber.matches("^ABC[0-9]{4}$")) {
+        if (!trackingNumber.matches(TRACKING_NUMBER_PATTERN)) {
             throw new IllegalArgumentException("Invalid Input! Input does not match format: ABC0001.");
-        }
-
-        if (ParcelManager.getInstance().containsKey(trackingNumber) && !mustExist) {
-            throw new IllegalArgumentException("The tracking number already exists.");
-        }
-
-        if (!ParcelManager.getInstance().containsKey(trackingNumber) && mustExist) {
-            throw new IllegalArgumentException("The tracking number does not exist.");
         }
     }
 
     public static void validateNumberOfPages(String rawInput) {
-        isValidInteger(rawInput);
+        validateNumberOfPages(parsePositiveInteger(rawInput));
+    }
 
-        if (Integer.parseInt(rawInput) > 100) {
+    public static void validateNumberOfPages(int numberOfPages) {
+        if (numberOfPages < 1 || numberOfPages > 100) {
             throw new IllegalArgumentException("Invalid Input! Number must be lower than 100.");
         }
     }
 
     public static void validateBoxMeasurement(String rawInput) {
-        isValidInteger(rawInput);
+        validateBoxMeasurement(parsePositiveInteger(rawInput));
+    }
+
+    public static void validateBoxMeasurement(int measurement) {
+        if (measurement <= 0) {
+            throw new IllegalArgumentException("Invalid Input! Number must be a valid integer.");
+        }
     }
 
     public static void validateNonEmptyStrings(String rawInput) {
@@ -110,31 +111,21 @@ public class Validation {
     }
 
     // Helper Functions of Validation Methods
-    private static void hasLeadingZero(String rawInput) {
-        if (rawInput.startsWith("0") && !rawInput.startsWith("0.")) {
-            throw new NumberFormatException("Invalid Input! No Leading Zeroes Allowed!");
-        }
-    }
-
     private static void isInputEmpty(String rawInput) {
-        if (rawInput.isEmpty()) {
+        if (rawInput.isEmpty() || rawInput.isBlank()) {
             throw new IllegalArgumentException("Invalid Input! Input cannot be empty.");
         }
     }
 
-    private static void isNegative(String rawInput) {
-        if (rawInput.startsWith("-")) {
-            throw new IllegalArgumentException("Invalid Input! Number must be non-negative.");
-        }
-    }
-
-    private static void isValidInteger(String rawInput) {
+    private static int parsePositiveInteger(String rawInput) {
         isInputEmpty(rawInput);
-        isNegative(rawInput);
-        hasLeadingZero(rawInput);
+
+        if (!rawInput.matches(POSITIVE_INTEGER_PATTERN)) {
+            throw new NumberFormatException("Invalid Input! Number must be a valid integer.");
+        }
 
         try {
-            Integer.parseInt(rawInput);
+            return Integer.parseInt(rawInput);
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Invalid Input! Number must be a valid integer.");
         }

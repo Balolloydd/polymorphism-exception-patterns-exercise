@@ -9,12 +9,13 @@ public class Document extends Parcel {
 
     public Document(String trackingNumber, String receiverName, double weight, int numberOfPages) {
         super(trackingNumber, receiverName, weight);
-        
-        Validation.validateNumberOfPages(String.valueOf(numberOfPages));
+
+        Validation.validateWeight(weight, ParcelType.DOCUMENT.getMaxWeight());
+        Validation.validateNumberOfPages(numberOfPages);
         this.numberOfPages = numberOfPages;
     }
 
-    @Override 
+    @Override
     public ParcelType getType() {
         return ParcelType.DOCUMENT;
     }
